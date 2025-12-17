@@ -251,9 +251,7 @@ await refresh();
 setInterval(refresh, POLL_SECONDS * 1000);
 
 /* ================== ROUTES ================== */
-app.get("/", (_req, res) => {
-  res.redirect("/widget");
-});
+app.get("/", (_req, res) => res.redirect("/widget"));
 
 app.get("/widget.json", (_req, res) => {
   res.setHeader("Cache-Control", "no-store");
@@ -275,13 +273,17 @@ app.get("/widget", (_req, res) => {
     --txt: rgba(255,255,255,0.94);
     --muted: rgba(255,255,255,0.60);
 
-    /* CZARNO-CZERWONY */
+    /* MOTYW: czarno-czerwony */
     --acc: rgba(255,70,70,0.95);
     --acc2: rgba(180,30,30,0.95);
 
-    --loss: rgba(255,70,70,0.95);
-    --warn: rgba(255,190,90,0.95);
+    /* W/L: WIN musi być zielony */
+    --win: rgba(78,255,155,0.95);
+    --win2: rgba(22,200,120,0.95);
+    --loss: rgba(255,70,70,0.98);
+    --loss2: rgba(140,0,0,0.98);
 
+    --warn: rgba(255,190,90,0.95);
     --shadow: 0 16px 46px rgba(0,0,0,0.55);
 
     --W: 420px;
@@ -321,6 +323,7 @@ app.get("/widget", (_req, res) => {
     pointer-events:none;
   }
 
+  /* Dolna linia: czerwona */
   .line{
     position:absolute; left:0; right:0; bottom:0; height:2px;
     background: linear-gradient(90deg, transparent, var(--acc), transparent);
@@ -334,7 +337,7 @@ app.get("/widget", (_req, res) => {
     50%{ opacity:1; filter: blur(0.2px); }
   }
 
-  /* ====== FLAME ON BORDER (OBWÓD) ====== */
+  /* Flame na obwodzie: czerwony */
   .flameTrack{
     position:absolute;
     inset: 0;
@@ -387,51 +390,15 @@ app.get("/widget", (_req, res) => {
   }
 
   @keyframes borderOrbit{
-    0% {
-      left: calc(var(--edgeInset));
-      top: calc(var(--edgeInset));
-      transform: translate(-50%, -50%) rotate(0deg);
-    }
-    24% {
-      left: calc(100% - var(--edgeInset));
-      top: calc(var(--edgeInset));
-      transform: translate(-50%, -50%) rotate(0deg);
-    }
-    25% {
-      left: calc(100% - var(--edgeInset));
-      top: calc(var(--edgeInset));
-      transform: translate(-50%, -50%) rotate(90deg);
-    }
-    49% {
-      left: calc(100% - var(--edgeInset));
-      top: calc(100% - var(--edgeInset));
-      transform: translate(-50%, -50%) rotate(90deg);
-    }
-    50% {
-      left: calc(100% - var(--edgeInset));
-      top: calc(100% - var(--edgeInset));
-      transform: translate(-50%, -50%) rotate(180deg);
-    }
-    74% {
-      left: calc(var(--edgeInset));
-      top: calc(100% - var(--edgeInset));
-      transform: translate(-50%, -50%) rotate(180deg);
-    }
-    75% {
-      left: calc(var(--edgeInset));
-      top: calc(100% - var(--edgeInset));
-      transform: translate(-50%, -50%) rotate(270deg);
-    }
-    99% {
-      left: calc(var(--edgeInset));
-      top: calc(var(--edgeInset));
-      transform: translate(-50%, -50%) rotate(270deg);
-    }
-    100% {
-      left: calc(var(--edgeInset));
-      top: calc(var(--edgeInset));
-      transform: translate(-50%, -50%) rotate(360deg);
-    }
+    0% { left: calc(var(--edgeInset)); top: calc(var(--edgeInset)); transform: translate(-50%, -50%) rotate(0deg); }
+    24% { left: calc(100% - var(--edgeInset)); top: calc(var(--edgeInset)); transform: translate(-50%, -50%) rotate(0deg); }
+    25% { left: calc(100% - var(--edgeInset)); top: calc(var(--edgeInset)); transform: translate(-50%, -50%) rotate(90deg); }
+    49% { left: calc(100% - var(--edgeInset)); top: calc(100% - var(--edgeInset)); transform: translate(-50%, -50%) rotate(90deg); }
+    50% { left: calc(100% - var(--edgeInset)); top: calc(100% - var(--edgeInset)); transform: translate(-50%, -50%) rotate(180deg); }
+    74% { left: calc(var(--edgeInset)); top: calc(100% - var(--edgeInset)); transform: translate(-50%, -50%) rotate(180deg); }
+    75% { left: calc(var(--edgeInset)); top: calc(100% - var(--edgeInset)); transform: translate(-50%, -50%) rotate(270deg); }
+    99% { left: calc(var(--edgeInset)); top: calc(var(--edgeInset)); transform: translate(-50%, -50%) rotate(270deg); }
+    100% { left: calc(var(--edgeInset)); top: calc(var(--edgeInset)); transform: translate(-50%, -50%) rotate(360deg); }
   }
 
   .err{
@@ -523,16 +490,16 @@ app.get("/widget", (_req, res) => {
   }
   .champ img{ width:100%; height:100%; object-fit:cover; transform:scale(1.07); }
 
-  /* W/L ramki + pasek */
-  .champ.win{ box-shadow: 0 0 0 2px rgba(255,70,70,0.55) inset; }
+  /* KEY FIX: WIN zielony, LOSE czerwony */
+  .champ.win{ box-shadow: 0 0 0 2px rgba(78,255,155,0.70) inset; }
   .champ.loss{ box-shadow: 0 0 0 2px rgba(255,70,70,0.92) inset; }
 
   .resultbar{
     position:absolute; left:0; right:0; bottom:0; height:4px;
     opacity:.95;
   }
-  .resultbar.win{ background: linear-gradient(90deg, var(--acc), var(--acc2)); }
-  .resultbar.loss{ background: linear-gradient(90deg, rgba(255,70,70,0.98), rgba(140,0,0,0.98)); }
+  .resultbar.win{ background: linear-gradient(90deg, var(--win), var(--win2)); }
+  .resultbar.loss{ background: linear-gradient(90deg, var(--loss), var(--loss2)); }
 
   .mark{
     position:absolute; right:2px; top:2px;
@@ -543,8 +510,8 @@ app.get("/widget", (_req, res) => {
     font-size:10px; font-weight:950;
     border: 1px solid rgba(255,255,255,0.10);
   }
-  .mark.win{ color: rgba(255,255,255,0.92); }
-  .mark.loss{ color: rgba(255,255,255,0.92); }
+  .mark.win{ color: rgba(78,255,155,0.95); }
+  .mark.loss{ color: rgba(255,70,70,0.95); }
 
   .sessionWL{
     font-size: 28px;
@@ -559,13 +526,10 @@ app.get("/widget", (_req, res) => {
     line-height:1.1;
   }
 
-  /* Winrate kolorystyka jak wcześniej: <=48 czerwony, 49-51 żółty, >=52 zielony
-     Teraz zamiast zielonego daję "jasny akcent" (prawie biały / czerwony neon),
-     żeby było czarno-czerwone i dalej czytelne.
-  */
+  /* Winrate thresholds: red/yellow/green */
   .wr-red{ color: rgba(255,70,70,0.95); }
   .wr-yellow{ color: rgba(255,190,90,0.95); }
-  .wr-green{ color: rgba(255,255,255,0.92); }
+  .wr-green{ color: rgba(78,255,155,0.95); }
 </style>
 </head>
 <body>
@@ -573,7 +537,6 @@ app.get("/widget", (_req, res) => {
   <div class="flameTrack"><div class="flame"></div></div>
   <div class="line"></div>
 
-  <!-- Slide 1 -->
   <div class="slide active" id="s1">
     <div class="pad">
       <div class="left" style="flex:1 1 auto; min-width:0;">
@@ -595,7 +558,6 @@ app.get("/widget", (_req, res) => {
     <div class="err" id="err1"></div>
   </div>
 
-  <!-- Slide 2 -->
   <div class="slide" id="s2">
     <div class="pad">
       <div class="left" style="flex:1 1 auto; min-width:0;">
@@ -618,7 +580,6 @@ app.get("/widget", (_req, res) => {
     <div class="err" id="err2"></div>
   </div>
 
-  <!-- Slide 3 -->
   <div class="slide" id="s3">
     <div class="pad">
       <div class="mhWrap">
@@ -629,7 +590,6 @@ app.get("/widget", (_req, res) => {
     <div class="err" id="err3"></div>
   </div>
 
-  <!-- Slide 4 -->
   <div class="slide" id="s4">
     <div class="pad">
       <div class="left" style="flex:0 0 auto;">
@@ -651,7 +611,6 @@ app.get("/widget", (_req, res) => {
     <div class="err" id="err4"></div>
   </div>
 
-  <!-- Slide 5 -->
   <div class="slide" id="s5">
     <div class="pad">
       <div class="left" style="flex:0 0 auto;">
@@ -734,7 +693,7 @@ app.get("/widget", (_req, res) => {
     const sw = d.session?.wins ?? 0;
     const sl = d.session?.losses ?? 0;
     document.getElementById("sessWL").innerHTML =
-      \`<span style="color: var(--acc);">\${sw}</span><span style="color: rgba(255,255,255,0.80);">-</span><span style="color: rgba(255,70,70,0.95);">\${sl}</span>\`;
+      \`<span style="color: var(--win);">\${sw}</span><span style="color: rgba(255,255,255,0.80);">-</span><span style="color: var(--loss);">\${sl}</span>\`;
 
     document.getElementById("sessKDA").textContent = d.session?.kda ?? "0.0";
     document.getElementById("sessKDAraw").textContent =
